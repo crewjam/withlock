@@ -1,10 +1,26 @@
 language: go
+
+env: GO111MODULE=on
+
 go:
-- master
+  - master
+
+before_script:
+  - curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.21.0
+
+script:
+  - go test ./...
+  - golangci-lint run
+  - GOOS=linux GOARCH=amd64 go build -o withlock.linux.amd64 .
+  - GOOS=darwin GOARCH=amd64 go build -o withlock.darwin.amd64 .
+
 deploy:
   provider: releases
   api_key:
     secure: WPxqVQhwbjIdPgWBTTxLqP5o1PkL6XiLWg6zwDY/Dj30fuULC2H/LYgwSf+Y5agS9+3EiYFz4Z29Rrw3OgpgiJSHqBItZvgVrWfO2lWXJ1WS7rXsqw6qLb/rgFYlCquyjvj6VEFyOniTxpKldHSlM1JtRbOa9auuGmvc1uEyPNiJ3ksWR96QAk0XCK6CDbthWqGKbP/o/gbWEwz/Hu6vmQ/a8hNQwHXdqHOnirqq2vnIQ+qiPig31/rYRHUcoMOnM5XQ8j5/FLrVCgodu+dtz4vUdZljmbbIqmLIXE9VU4zHXY2L+DDLFY4sOE4u96TC0ulesXOXrfYSQc6Ot8SSlVjC+4UqVxP6g1eJNqe1UBXbArB1awmWFvOOK9v1VvgOCgCE+17AeL1NbPDRHQo5OFp6Y4BF1+TyzOwrd/fQx22f3OBDh0oTY10ai6w1GcCkrMkIOzc6F2IUbEIYP6WIISyaaM00rdbtCxgo4mPQ+i9n4ZV1rnHlMpqbCNIeb1xHA/G4BsslRDj9WLfsGirnGrtz3pZZ8lbBq4506zNqtFCeiibUzPoOsKkoiIaPP2wNbsiCdj8yRzmo9Zj19uBzo2HcEobFLAzRlFawTZG/sDS70ahR5SZDEwyf0WT9vs1N+SNStIzwZkQNndSq1hQau2JjAgqAPohj97wTlsefjyQ=
-  file: withlock
+  file:
+    - withlock.linux.amd64
+    - withlock.darwin.amd64
+  skip_cleanup: true
   on:
-    repo: crewjam/withlock
+    tags: true
