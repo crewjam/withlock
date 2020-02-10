@@ -10,6 +10,7 @@ before_script:
 
 script:
   - go test ./...
+  - go get ./...
   - golangci-lint run
   - GOOS=linux GOARCH=amd64 go build -o withlock.linux.amd64 .
   - GOOS=darwin GOARCH=amd64 go build -o withlock.darwin.amd64 .
